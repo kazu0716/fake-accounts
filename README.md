@@ -1,4 +1,4 @@
-# fake-accounts
+fake-accounts
 ====
 
 ## Overview
