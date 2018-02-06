@@ -1,5 +1,6 @@
 # coding:utf-8
 import argparse
+import csv
 import random
 
 from faker import Faker
@@ -19,7 +20,8 @@ def gen_password():
 def gen_user():
     email = fake.email()
     username = email[:email.index("@")]
-    return username, email
+    domain = email[email.index("@"):]
+    return username, email, domain
 
 
 def main():
@@ -28,10 +30,24 @@ def main():
     parser.add_argument('-t', '--usertype',  type=str, choices=['random', 'increment'], required=True, help='type of username random or increment such as user01, user02...')
     parser.add_argument('-o', '--output',  type=str, default="account_list.csv", help='output csv file of fake accounts')
     args = parser.parse_args()
-    # print(args)
-    for i in range(args.length):
-        print(gen_user())
-        print(gen_password())
+
+    array = []
+
+    if args.usertype == "random":
+        for i in range(args.length):
+            user = gen_user()
+            array.append([user[0], user[1], gen_password()])
+
+    elif args.usertype == "increment":
+        user = gen_user()
+        username = gen_user()[0]
+        domain = gen_user()[2]
+        for i in range(args.length):
+            array.append([username + str(i), username + str(i) + domain, gen_password()])
+
+    with open(args.output, 'w') as f:
+        writer = csv.writer(f, lineterminator='\n')
+        writer.writerows(array)
 
 
 if __name__ == "__main__":
